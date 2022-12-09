@@ -1,12 +1,21 @@
 const express = require("express")
 const router = express.Router()
+const IntervalUsage = require('../model/interval')
 
 router.use(express.json());
 
 router.post("/", (req, res) => {
     console.log(req.body)
-    res.send("Hello Input World")
+    let receivedinfo = new IntervalUsage(req.body)
+    receivedinfo.save()
+    .then((result) => {
+        res.json({"status" : "Done"} )
+      })
+      .catch((err) => {
+        console.log(err)
+        res.json({ "Error Message" : "There maybe some problem while inserting the data into the database , Please check if your format is correct" })
+    });
 })
 
 
-module.exports = router
+module.exports = router;
