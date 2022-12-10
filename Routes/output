@@ -19,18 +19,15 @@ const IntervalUsage = require('../model/interval')
 // }
 
 router.post('/peruserdata', (req, res) => {
-    // const userrequest = req.body
-    // (mongosearch(userrequest))
-    // res.send("ack")
-    const userrequest = req.body;
-    const rSearchparameter = makesearchparameter(userrequest);
+    let userrequest = req.body;
+    let rSearchparameter = makesearchparameter(userrequest);
     // Find the data in the mongodb database
     IntervalUsage.find(rSearchparameter,{ _id : 0 , __v : 0} , (err, data) => {
         if(err){
             console.log(err)
         } 
         else {
-            var pusheverythinghere = [ ]
+            let pusheverythinghere = [ ]
             Object.entries(data).forEach(entry => {
                 [key , value] = entry
                 pusheverythinghere.push(value)
@@ -42,7 +39,7 @@ router.post('/peruserdata', (req, res) => {
 
 
 
-// different functions
+// A function to make search parameters from the input recieved
 
 function makesearchparameter(userrequest) {
     if (!userrequest.fromdate){
@@ -54,7 +51,7 @@ function makesearchparameter(userrequest) {
     console.log(userrequest)
 // Addressing the mac address situation before proceeding to these search section
 // Making a json that is used in case there is no mac address
-    const defaultjson = { "date" : {
+    let defaultjson = { "date" : {
     "$gt" : userrequest.fromdate,
     "$lt" : userrequest.todate 
     }  }
@@ -64,7 +61,7 @@ function makesearchparameter(userrequest) {
      searchparameters = defaultjson
     } else {
         // if there is mac extend the json to include mac address and make it the searchparameter
-    const extendedjson = { "macaddress" : userrequest.macaddress }
+    let extendedjson = { "macaddress" : userrequest.macaddress }
     searchparameters = {
         ...defaultjson,
         ...extendedjson
