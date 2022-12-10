@@ -1,0 +1,74 @@
+//requiring express 
+const express = require("express")
+//setting a router , app. is replaced by router. here on in this file
+const router = express.Router()
+// importing the schema of mongoose
+const IntervalUsage = require('../model/interval')
+ // using json structire in express 
+ router.use(express.json());
+
+
+// Making a endpoint at /output/peruserdata that sends the data 
+// will make it so if a time period is not given it will be all data
+// and if user is not specified , it will send all user's data
+// Sample input for this Endpoint
+// {                     
+//      "fromdate" : "Number",
+//      "todate" : "Number",
+//      "macaddress" : "String"
+// }
+
+router.post('/peruserdata', (req, res) => {
+    let userrequest = req.body;
+    let rSearchparameter = makesearchparameter(userrequest);
+    // Find the data in the mongodb database
+    IntervalUsage.find(rSearchparameter,{ _id : 0 , __v : 0} , (err, data) => {
+        if(err){
+            console.log(err)
+        } 
+        else {
+            let pusheverythinghere = [ ]
+            Object.entries(data).forEach(entry => {
+                [key , value] = entry
+                pusheverythinghere.push(value)
+            })
+            res.send(pusheverythinghere)
+        }
+})
+})
+
+
+
+// A function to make search parameters from the input recieved
+
+function makesearchparameter(userrequest) {
+    if (!userrequest.fromdate){
+        userrequest.fromdate = 0 
+    }
+    if (!userrequest.todate){
+        userrequest.todate = 9999999999
+    }
+    console.log(userrequest)
+// Addressing the mac address situation before proceeding to these search section
+// Making a json that is used in case there is no mac address
+    let defaultjson = { "date" : {
+    "$gt" : userrequest.fromdate,
+    "$lt" : userrequest.todate 
+    }  }
+    let searchparameters;
+    if (!userrequest.macaddress){
+        // if there is no mac address make default json the default searchparameter 
+     searchparameters = defaultjson
+    } else {
+        // if there is mac extend the json to include mac address and make it the searchparameter
+    let extendedjson = { "macaddress" : userrequest.macaddress }
+    searchparameters = {
+        ...defaultjson,
+        ...extendedjson
+    }
+    }
+
+    return searchparameters;
+}
+
+module.exports = router;
