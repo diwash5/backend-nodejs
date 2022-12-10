@@ -15,10 +15,36 @@ const IntervalUsage = require('../model/interval')
 // {                     
 //      "fromdate" : "Number",
 //      "todate" : "Number",
+//      "macaddress" : "String"
 // }
+
 router.post('/peruserdata', (req, res) => {
-    res.json({"request" : "Acknowledged"})
-    userrequest = req.body
+    // const userrequest = req.body
+    // (mongosearch(userrequest))
+    // res.send("ack")
+    const userrequest = req.body;
+    const rSearchparameter = makesearchparameter(userrequest);
+    // Find the data in the mongodb database
+    IntervalUsage.find(rSearchparameter,{ _id : 0 , __v : 0} , (err, data) => {
+        if(err){
+            console.log(err)
+        } 
+        else {
+            var pusheverythinghere = [ ]
+            Object.entries(data).forEach(entry => {
+                [key , value] = entry
+                pusheverythinghere.push(value)
+            })
+            res.send(pusheverythinghere)
+        }
+})
+})
+
+
+
+// different functions
+
+function makesearchparameter(userrequest) {
     if (!userrequest.fromdate){
         userrequest.fromdate = 0 
     }
@@ -26,30 +52,26 @@ router.post('/peruserdata', (req, res) => {
         userrequest.todate = 9999999999
     }
     console.log(userrequest)
-    
-    
-    IntervalUsage.find({ "date" :{
-        "$gt" : userrequest.fromdate,
-        "$lt" : userrequest.todate
-    }},{ _id : 0 , __v : 0} , (err, data) => {
-        if(err){
-            console.log(err)
-        } 
-        else {
-            console.log(data)
-        Object.entries(data).forEach(entry => {
-            [key , value] = entry
-            console.log(value)
-        })
-        }
+// Addressing the mac address situation before proceeding to these search section
+// Making a json that is used in case there is no mac address
+    const defaultjson = { "date" : {
+    "$gt" : userrequest.fromdate,
+    "$lt" : userrequest.todate 
+    }  }
+    let searchparameters;
+    if (!userrequest.macaddress){
+        // if there is no mac address make default json the default searchparameter 
+     searchparameters = defaultjson
+    } else {
+        // if there is mac extend the json to include mac address and make it the searchparameter
+    const extendedjson = { "macaddress" : userrequest.macaddress }
+    searchparameters = {
+        ...defaultjson,
+        ...extendedjson
+    }
+    }
 
-    })
-
-
-
-
-})
-
-
+    return searchparameters;
+}
 
 module.exports = router;
