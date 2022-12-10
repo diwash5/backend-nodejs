@@ -1,0 +1,30 @@
+//requiring express 
+const express = require("express")
+//setting a router , app. is replaced by router. here on in this file
+const router = express.Router()
+// importing the schema of mongoose
+const IntervalUsage = require('../model/interval')
+ // using json structire in express 
+ router.use(express.json());
+
+
+// Making a endpoint at /output/peruserdata that sends the data 
+// will make it so if a time period is not given it will be all data
+// and if user is not specified , it will send all user's data
+// Sample input for this Endpoint
+// {                     
+//      "fromdate" : "Number",
+//      "todate" : "Number",
+//      "user" : "string", 
+// }
+//
+
+router.post('/peruserdata', (req, res) => {
+    userrequest = req.body
+    console.log(userrequest)
+    res.json({"request" : "Acknowledged"})
+})
+
+
+
+module.exports = router;
