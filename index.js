@@ -7,6 +7,7 @@ const mongoose = require('mongoose')
 // using environment variables from .vscode/launch.json
 // under configuration , env is added with mongoourl
 
+//const mongooseurl = process.env['mongourl']
 
 const mongooseurl = `${process.env.mongourl}`
 
