@@ -1,33 +1,33 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 // Making a schema for the data
 const intervalUsageSchema = new Schema({
-    ip : {
-        type: String,
-        required : true
-     },
-    deviceName :{
-        type: String,
-        required : true
-    },
-    macaddress : {
-        type : String,
-        required : true
-    },
-    date : {
-        type : Number,
-        required : true
-    },
-    upload : {
-        type : Number,
-        required : true
-    },
-    download : {
-        type : Number,
-        required : true
-    }
-})
+  ip: {
+    type: String,
+    required: true,
+  },
+  deviceName: {
+    type: String,
+    required: true,
+  },
+  macaddress: {
+    type: String,
+    required: true,
+  },
+  date: {
+    type: Number,
+    required: true,
+  },
+  upload: {
+    type: Number,
+    required: true,
+  },
+  download: {
+    type: Number,
+    required: true,
+  },
+});
 
-const IntervalUsage = mongoose.model( 'Intervalusage', intervalUsageSchema );
+const IntervalUsage = mongoose.model("Intervalusage", intervalUsageSchema);
 module.exports = IntervalUsage;
