@@ -14,12 +14,14 @@ router.use(express.json());
 // {
 //      "fromdate" : "Number",
 //      "todate" : "Number",
-//      "macaddress" : "String"
+//      "macaddress" : "String",
+//      "deviceName" : "String"
 // }
 
 router.post("/peruserdata", (req, res) => {
   let userrequest = req.body;
-  let rSearchparameter = makesearchparameter(userrequest);
+  let rSearchparameter = makesearchparameters(userrequest);
+  console.log(rSearchparameter);
   // Find the data in the mongodb database
   IntervalUsage.find(rSearchparameter, { _id: 0, __v: 0 }, (err, data) => {
     if (err) {
@@ -37,35 +39,29 @@ router.post("/peruserdata", (req, res) => {
 
 // A function to make search parameters from the input recieved
 
-function makesearchparameter(userrequest) {
+// A function that will make searchparameters based on what is given
+function makesearchparameters(userrequest) {
+  // setting default value for to and from dates if it is not set .
   if (!userrequest.fromdate) {
     userrequest.fromdate = 0;
   }
   if (!userrequest.todate) {
     userrequest.todate = 9999999999;
   }
-  console.log(userrequest);
-  // Addressing the mac address situation before proceeding to these search section
-  // Making a json that is used in case there is no mac address
-  let defaultjson = {
+  let searchparameters = {
     date: {
       $gt: userrequest.fromdate,
       $lt: userrequest.todate,
     },
   };
-  let searchparameters;
-  if (!userrequest.macaddress) {
-    // if there is no mac address make default json the default searchparameter
-    searchparameters = defaultjson;
-  } else {
-    // if there is mac extend the json to include mac address and make it the searchparameter
-    let extendedjson = { macaddress: userrequest.macaddress };
-    searchparameters = {
-      ...defaultjson,
-      ...extendedjson,
-    };
+  // if mac address is given , tach on the mac address too
+  if (userrequest.macaddress) {
+    searchparameters.macaddress = userrequest.macaddress;
   }
-
+  // if deviceName is given , tach it too
+  if (userrequest.deviceName) {
+    searchparameters.deviceName = userrequest.deviceName;
+  }
   return searchparameters;
 }
 
